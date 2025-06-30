@@ -148,6 +148,87 @@
         </main>
     </div>
 
+    <!-- Modal Nuevo Tratamiento -->
+    <div id="modal-tratamiento" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Nuevo Tratamiento</h3>
+                <form id="form-tratamiento" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nombre</label>
+                        <input type="text" id="tratamiento-nombre" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-natural-500 focus:border-natural-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Descripción</label>
+                        <textarea id="tratamiento-descripcion" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-natural-500 focus:border-natural-500" rows="3"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Precio</label>
+                        <input type="number" id="tratamiento-precio" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-natural-500 focus:border-natural-500">
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" class="bg-gray-200 px-4 py-2 rounded-md text-gray-700 hover:bg-gray-300" onclick="cerrarModalTratamiento()">Cancelar</button>
+                        <button type="submit" class="bg-natural-600 px-4 py-2 rounded-md text-white hover:bg-natural-700">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Paciente -->
+    <div id="modal-paciente" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-[600px] shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Nuevo Paciente</h3>
+                <form id="form-paciente" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Nombre Completo</label>
+                            <input type="text" id="paciente-nombre" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-natural-500 focus:border-natural-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">RUT</label>
+                            <input type="text" id="paciente-rut" required placeholder="12.345.678-9" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-natural-500 focus:border-natural-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
+                            <input type="date" id="paciente-fecha" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-natural-500 focus:border-natural-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Teléfono</label>
+                            <input type="tel" id="paciente-telefono" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-natural-500 focus:border-natural-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Patologías</label>
+                        <textarea id="paciente-patologias" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-natural-500 focus:border-natural-500" rows="2"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Enfermedades Diagnosticadas</label>
+                        <textarea id="paciente-enfermedades" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-natural-500 focus:border-natural-500" rows="2"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Motivo de Consulta</label>
+                        <textarea id="paciente-motivo" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-natural-500 focus:border-natural-500" rows="2"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" class="bg-gray-200 px-4 py-2 rounded-md text-gray-700 hover:bg-gray-300" onclick="cerrarModalPaciente()">Cancelar</button>
+                        <button type="submit" class="bg-natural-600 px-4 py-2 rounded-md text-white hover:bg-natural-700">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificación -->
+    <div id="notificacion" class="fixed top-4 right-4 hidden z-50">
+        <div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
+            <span id="mensaje-notificacion"></span>
+        </div>
+    </div>
+
     <script>
         // Configuración de headers para las peticiones
         const getHeaders = () => ({
@@ -157,6 +238,23 @@
 
         // Mostrar nombre de usuario
         document.getElementById('userName').textContent = localStorage.getItem('userName');
+
+        // Función para mostrar notificaciones
+        function mostrarNotificacion(mensaje, tipo = 'success') {
+            const notificacion = document.getElementById('notificacion');
+            const mensajeEl = document.getElementById('mensaje-notificacion');
+            const contenedor = notificacion.firstElementChild;
+            
+            mensajeEl.textContent = mensaje;
+            contenedor.className = tipo === 'success' 
+                ? 'bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg'
+                : 'bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg';
+            
+            notificacion.classList.remove('hidden');
+            setTimeout(() => {
+                notificacion.classList.add('hidden');
+            }, 3000);
+        }
 
         // Función para cerrar sesión
         function cerrarSesion() {
@@ -207,7 +305,7 @@
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">${t.nombre}</td>
                             <td class="px-6 py-4">${t.descripcion}</td>
-                            <td class="px-6 py-4">$${t.precio}</td>
+                            <td class="px-6 py-4">$${Number(t.precio).toLocaleString()}</td>
                             <td class="px-6 py-4 space-x-2">
                                 <button class="text-blue-600 hover:text-blue-800" onclick="editarTratamiento(${t.id})">
                                     <i class="fas fa-edit"></i>
@@ -260,6 +358,103 @@
             }
         }
 
+        // Funciones para modales
+        function mostrarModalTratamiento() {
+            document.getElementById('modal-tratamiento').classList.remove('hidden');
+        }
+
+        function cerrarModalTratamiento() {
+            document.getElementById('modal-tratamiento').classList.add('hidden');
+            document.getElementById('form-tratamiento').reset();
+        }
+
+        function mostrarModalPaciente() {
+            document.getElementById('modal-paciente').classList.remove('hidden');
+        }
+
+        function cerrarModalPaciente() {
+            document.getElementById('modal-paciente').classList.add('hidden');
+            document.getElementById('form-paciente').reset();
+        }
+
+// Manejar formulario de tratamiento
+document.getElementById('form-tratamiento').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const tratamiento = {
+        nombre: document.getElementById('tratamiento-nombre').value,
+        descripcion: document.getElementById('tratamiento-descripcion').value,
+        precio: parseFloat(document.getElementById('tratamiento-precio').value)
+    };
+
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/tratamientos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(tratamiento)
+        });
+
+        if (handleAuthError(response)) return;
+
+        if (response.ok) {
+            mostrarNotificacion('Tratamiento creado exitosamente');
+            cerrarModalTratamiento();
+            cargarTratamientos();
+        } else {
+            const error = await response.json();
+            mostrarNotificacion(error.mensaje || 'Error al crear tratamiento', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarNotificacion('Error al conectar con el servidor', 'error');
+    }
+});
+
+// Manejar formulario de paciente
+document.getElementById('form-paciente').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const paciente = {
+        nombre: document.getElementById('paciente-nombre').value,
+        rut: document.getElementById('paciente-rut').value,
+        fechaNacimiento: document.getElementById('paciente-fecha').value,
+        telefono: document.getElementById('paciente-telefono').value,
+        patologias: document.getElementById('paciente-patologias').value,
+        enfermedadesDiagnosticadas: document.getElementById('paciente-enfermedades').value,
+        motivoConsulta: document.getElementById('paciente-motivo').value
+    };
+
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/pacientes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(paciente)
+        });
+
+        if (handleAuthError(response)) return;
+
+        if (response.ok) {
+            mostrarNotificacion('Paciente creado exitosamente');
+            cerrarModalPaciente();
+            cargarPacientes();
+        } else {
+            const error = await response.json();
+            mostrarNotificacion(error.mensaje || 'Error al crear paciente', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarNotificacion('Error al conectar con el servidor', 'error');
+    }
+});
+
         // Buscar pacientes
         async function buscarPacientes() {
             const nombre = document.getElementById('buscar-paciente').value;
@@ -297,6 +492,112 @@
             }
         }
 
+        // Funciones placeholder para editar y eliminar
+        function editarTratamiento(id) {
+            mostrarNotificacion('Función de editar en desarrollo', 'error');
+        }
+
+        function eliminarTratamiento(id) {
+            if (confirm('¿Está seguro de eliminar este tratamiento?')) {
+                // Implementar eliminación
+                mostrarNotificacion('Función de eliminar en desarrollo', 'error');
+            }
+        }
+
+        function editarPaciente(id) {
+            mostrarNotificacion('Función de editar en desarrollo', 'error');
+        }
+
+        function eliminarPaciente(id) {
+            if (confirm('¿Está seguro de eliminar este paciente?')) {
+                // Implementar eliminación
+                mostrarNotificacion('Función de eliminar en desarrollo', 'error');
+            }
+        }
+
+        // Funciones placeholder para editar y eliminar
+        function editarTratamiento(id) {
+            mostrarNotificacion('Función de editar en desarrollo', 'error');
+        }
+
+        function eliminarTratamiento(id) {
+            if (confirm('¿Está seguro de eliminar este tratamiento?')) {
+                // Implementar eliminación
+                mostrarNotificacion('Función de eliminar en desarrollo', 'error');
+            }
+        }
+
+        function editarPaciente(id) {
+            mostrarNotificacion('Función de editar en desarrollo', 'error');
+        }
+
+        function eliminarPaciente(id) {
+            if (confirm('¿Está seguro de eliminar este paciente?')) {
+                // Implementar eliminación
+                mostrarNotificacion('Función de eliminar en desarrollo', 'error');
+            }
+        }
+
+        // Modal para ficha clínica
+        function verFichaPaciente(id) {
+            // Abrir modal y cargar notas
+            const modal = document.getElementById('modal-ficha');
+            const textarea = document.getElementById('ficha-notas');
+            const btnGuardar = document.getElementById('btn-guardar-ficha');
+            modal.classList.remove('hidden');
+
+            // Obtener token
+            const token = localStorage.getItem('token');
+
+            // Cargar notas actuales del paciente
+            fetch(`/api/pacientes/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                textarea.value = data.notas || '';
+                btnGuardar.onclick = () => guardarFicha(id);
+            })
+            .catch(error => {
+                mostrarNotificacion('Error al cargar la ficha', 'error');
+                console.error(error);
+            });
+        }
+
+        // Guardar notas de ficha clínica
+        function guardarFicha(id) {
+            const textarea = document.getElementById('ficha-notas');
+            const token = localStorage.getItem('token');
+            fetch(`/api/pacientes/${id}/ficha`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ notas: textarea.value })
+            })
+            .then(response => {
+                if (response.ok) {
+                    mostrarNotificacion('Ficha actualizada exitosamente');
+                    cerrarModalFicha();
+                } else {
+                    mostrarNotificacion('Error al actualizar la ficha', 'error');
+                }
+            })
+            .catch(error => {
+                mostrarNotificacion('Error al conectar con el servidor', 'error');
+                console.error(error);
+            });
+        }
+
+        // Cerrar modal ficha clínica
+        function cerrarModalFicha() {
+            const modal = document.getElementById('modal-ficha');
+            modal.classList.add('hidden');
+        }
+
         // Verificar autenticación al cargar la página
         window.addEventListener('load', async function() {
             if (!localStorage.getItem('token')) {
@@ -319,5 +620,23 @@
             }
         });
     </script>
+
+    <!-- Modal Ficha Clínica -->
+    <div id="modal-ficha" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-[600px] shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Ficha Clínica - Notas</h3>
+                    <button onclick="cerrarModalFicha()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <textarea id="ficha-notas" rows="8" class="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-natural-500 focus:border-natural-500"></textarea>
+                <div class="flex justify-end mt-4">
+                    <button id="btn-guardar-ficha" class="bg-natural-600 px-4 py-2 rounded-md text-white hover:bg-natural-700">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
