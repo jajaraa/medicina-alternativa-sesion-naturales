@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Iniciar Sesión</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        natural: {
+                            50: '#f0f9f1',
+                            100: '#dcf1de',
+                            200: '#bbdfbe',
+                            300: '#90c594',
+                            400: '#65a66b',
+                            500: '#48884e',
+                            600: '#386c3d',
+                            700: '#2f5733',
+                            800: '#28462b',
+                            900: '#223b25',
+                        }
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-poppins bg-natural-50 min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-md">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-natural-800">Panel de Administración</h1>
+                <p class="text-gray-600 mt-2">Inicia sesión para acceder al sistema</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+                        Correo electrónico
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            value="admin@clinica.com"
+                            autocomplete="email"
+                            required 
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-natural-500 focus:border-natural-500"
+                        >
+                    </div>
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+                        Contraseña
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            value="admin123"
+                            autocomplete="current-password"
+                            required 
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-natural-500 focus:border-natural-500"
+                        >
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input 
+                            type="checkbox" 
+                            id="remember" 
+                            class="h-4 w-4 text-natural-600 focus:ring-natural-500 border-gray-300 rounded"
+                        >
+                        <label for="remember" class="ml-2 block text-sm text-gray-700">
+                            Recordarme
+                        </label>
+                    </div>
+                    <a href="#" class="text-sm text-natural-600 hover:text-natural-500">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+                </div>
+
+                <button 
+                    type="submit" 
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-natural-600 hover:bg-natural-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-natural-500"
+                >
+                    Iniciar sesión
+                </button>
+            </form>
+
+            <!-- Alerta de error (inicialmente oculta) -->
+            <div id="errorAlert" class="hidden mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline"></span>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/" class="text-sm text-natural-600 hover:text-natural-500">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Volver al sitio principal
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorAlert = document.getElementById('errorAlert');
+
+            try {
+                console.log('Enviando solicitud de login...');
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                console.log('Respuesta recibida:', data);
+
+                if (response.ok) {
+                    // Guardar el token en localStorage
+                    localStorage.setItem('token', data.accessToken);
+                    localStorage.setItem('userName', data.nombre);
+                    
+                    // Redirigir al dashboard
+                    window.location.href = '/admin/dashboard';
+                } else {
+                    // Mostrar mensaje de error
+                    errorAlert.classList.remove('hidden');
+                    errorAlert.querySelector('span').textContent = data.mensaje || 'Error al iniciar sesión';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorAlert.classList.remove('hidden');
+                errorAlert.querySelector('span').textContent = 'Error al conectar con el servidor';
+            }
+        });
+
+        // Verificar si ya hay una sesión activa
+        window.addEventListener('load', function() {
+            if (localStorage.getItem('token')) {
+                window.location.href = '/admin/dashboard';
+            }
+        });
+    </script>
+</body>
+</html>
