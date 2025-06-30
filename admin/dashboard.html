@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script>
+        // Verificar autenticación
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/admin';
+        }
+
+        // Configuración de Tailwind
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        natural: {
+                            50: '#f0f9f1',
+                            100: '#dcf1de',
+                            200: '#bbdfbe',
+                            300: '#90c594',
+                            400: '#65a66b',
+                            500: '#48884e',
+                            600: '#386c3d',
+                            700: '#2f5733',
+                            800: '#28462b',
+                            900: '#223b25',
+                        }
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-poppins bg-gray-100">
+    <!-- Navbar superior -->
+    <nav class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-semibold text-natural-800">Panel de Administración</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-600" id="userName"></span>
+                    <button class="text-gray-600 hover:text-natural-600" onclick="cerrarSesion()">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex h-screen bg-gray-100">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-md">
+            <nav class="mt-5 px-2">
+                <a href="#" class="group flex items-center px-2 py-2 text-base leading-6 font-medium rounded-md text-natural-600 bg-natural-50" id="btn-tratamientos">
+                    <i class="fas fa-leaf mr-4"></i>
+                    Tratamientos
+                </a>
+                <a href="#" class="group flex items-center px-2 py-2 text-base leading-6 font-medium rounded-md text-gray-600 hover:text-natural-600 hover:bg-natural-50 mt-1" id="btn-pacientes">
+                    <i class="fas fa-users mr-4"></i>
+                    Pacientes
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Contenido principal -->
+        <main class="flex-1 overflow-y-auto p-8">
+            <!-- Sección de Tratamientos -->
+            <div id="seccion-tratamientos" class="space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-semibold text-gray-800">Tratamientos</h2>
+                    <button class="bg-natural-600 text-white px-4 py-2 rounded-lg hover:bg-natural-700" onclick="mostrarModalTratamiento()">
+                        <i class="fas fa-plus mr-2"></i>Nuevo Tratamiento
+                    </button>
+                </div>
+
+                <!-- Tabla de tratamientos -->
+                <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="tabla-tratamientos">
+                            <!-- Los tratamientos se cargarán dinámicamente aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sección de Pacientes -->
+            <div id="seccion-pacientes" class="hidden space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-semibold text-gray-800">Pacientes</h2>
+                    <button class="bg-natural-600 text-white px-4 py-2 rounded-lg hover:bg-natural-700" onclick="mostrarModalPaciente()">
+                        <i class="fas fa-plus mr-2"></i>Nuevo Paciente
+                    </button>
+                </div>
+
+                <!-- Buscador de pacientes -->
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <div class="flex space-x-4">
+                        <div class="flex-1">
+                            <input 
+                                type="text" 
+                                id="buscar-paciente"
+                                placeholder="Buscar paciente por nombre..." 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-natural-500 focus:border-natural-500"
+                            >
+                        </div>
+                        <button class="bg-natural-600 text-white px-4 py-2 rounded-lg hover:bg-natural-700" onclick="buscarPacientes()">
+                            <i class="fas fa-search mr-2"></i>Buscar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabla de pacientes -->
+                <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RUT</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Nacimiento</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="tabla-pacientes">
+                            <!-- Los pacientes se cargarán dinámicamente aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Configuración de headers para las peticiones
+        const getHeaders = () => ({
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        });
+
+        // Mostrar nombre de usuario
+        document.getElementById('userName').textContent = localStorage.getItem('userName');
+
+        // Función para cerrar sesión
+        function cerrarSesion() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userName');
+            window.location.href = '/admin';
+        }
+
+        // Función para manejar errores de autenticación
+        function handleAuthError(response) {
+            if (response.status === 401 || response.status === 403) {
+                cerrarSesion();
+                return true;
+            }
+            return false;
+        }
+
+        // Cambio entre secciones
+        document.getElementById('btn-tratamientos').addEventListener('click', function() {
+            document.getElementById('seccion-tratamientos').classList.remove('hidden');
+            document.getElementById('seccion-pacientes').classList.add('hidden');
+            this.classList.add('text-natural-600', 'bg-natural-50');
+            document.getElementById('btn-pacientes').classList.remove('text-natural-600', 'bg-natural-50');
+            cargarTratamientos();
+        });
+
+        document.getElementById('btn-pacientes').addEventListener('click', function() {
+            document.getElementById('seccion-pacientes').classList.remove('hidden');
+            document.getElementById('seccion-tratamientos').classList.add('hidden');
+            this.classList.add('text-natural-600', 'bg-natural-50');
+            document.getElementById('btn-tratamientos').classList.remove('text-natural-600', 'bg-natural-50');
+            cargarPacientes();
+        });
+
+        // Cargar tratamientos
+        async function cargarTratamientos() {
+            try {
+                const response = await fetch('/api/tratamientos', { 
+                    headers: getHeaders()
+                });
+                
+                if (handleAuthError(response)) return;
+
+                if (response.ok) {
+                    const tratamientos = await response.json();
+                    const tbody = document.getElementById('tabla-tratamientos');
+                    tbody.innerHTML = tratamientos.map(t => `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">${t.nombre}</td>
+                            <td class="px-6 py-4">${t.descripcion}</td>
+                            <td class="px-6 py-4">$${t.precio}</td>
+                            <td class="px-6 py-4 space-x-2">
+                                <button class="text-blue-600 hover:text-blue-800" onclick="editarTratamiento(${t.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-800" onclick="eliminarTratamiento(${t.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Cargar pacientes
+        async function cargarPacientes() {
+            try {
+                const response = await fetch('/api/pacientes', { 
+                    headers: getHeaders()
+                });
+
+                if (handleAuthError(response)) return;
+
+                if (response.ok) {
+                    const pacientes = await response.json();
+                    const tbody = document.getElementById('tabla-pacientes');
+                    tbody.innerHTML = pacientes.map(p => `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">${p.nombre}</td>
+                            <td class="px-6 py-4">${p.rut}</td>
+                            <td class="px-6 py-4">${new Date(p.fechaNacimiento).toLocaleDateString()}</td>
+                            <td class="px-6 py-4 space-x-2">
+                                <button class="text-green-600 hover:text-green-800" onclick="verFichaPaciente(${p.id})">
+                                    <i class="fas fa-file-medical"></i>
+                                </button>
+                                <button class="text-blue-600 hover:text-blue-800" onclick="editarPaciente(${p.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-800" onclick="eliminarPaciente(${p.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Buscar pacientes
+        async function buscarPacientes() {
+            const nombre = document.getElementById('buscar-paciente').value;
+            try {
+                const response = await fetch(`/api/pacientes/buscar?nombre=${nombre}`, { 
+                    headers: getHeaders()
+                });
+
+                if (handleAuthError(response)) return;
+
+                if (response.ok) {
+                    const pacientes = await response.json();
+                    const tbody = document.getElementById('tabla-pacientes');
+                    tbody.innerHTML = pacientes.map(p => `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">${p.nombre}</td>
+                            <td class="px-6 py-4">${p.rut}</td>
+                            <td class="px-6 py-4">${new Date(p.fechaNacimiento).toLocaleDateString()}</td>
+                            <td class="px-6 py-4 space-x-2">
+                                <button class="text-green-600 hover:text-green-800" onclick="verFichaPaciente(${p.id})">
+                                    <i class="fas fa-file-medical"></i>
+                                </button>
+                                <button class="text-blue-600 hover:text-blue-800" onclick="editarPaciente(${p.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-800" onclick="eliminarPaciente(${p.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Verificar autenticación al cargar la página
+        window.addEventListener('load', async function() {
+            if (!localStorage.getItem('token')) {
+                window.location.href = '/admin';
+            } else {
+                try {
+                    const response = await fetch('/api/auth/perfil', {
+                        headers: getHeaders()
+                    });
+
+                    if (handleAuthError(response)) return;
+
+                    if (response.ok) {
+                        cargarTratamientos();
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    cerrarSesion();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
