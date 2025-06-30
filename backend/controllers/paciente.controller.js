@@ -23,19 +23,19 @@ exports.crear = async (req, res) => {
             patologias: req.body.patologias,
             enfermedadesDiagnosticadas: req.body.enfermedadesDiagnosticadas,
             motivoConsulta: req.body.motivoConsulta,
-            activo: true
-        };
+            notas: req.body.notas || "",
+        activo: true
+    };
 
-        // Guardar paciente en la base de datos
-        const data = await Paciente.create(paciente);
-        res.status(201).json(data);
-    } catch (err) {
-        res.status(500).json({
-            mensaje: err.message || "Ocurrió un error al crear el paciente."
-        });
-    }
+    // Guardar paciente en la base de datos
+    const data = await Paciente.create(paciente);
+    res.status(201).json(data);
+} catch (err) {
+    res.status(500).json({
+        mensaje: err.message || "Ocurrió un error al crear el paciente."
+    });
+}
 };
-
 // Obtener todos los pacientes
 exports.obtenerTodos = async (req, res) => {
     try {
