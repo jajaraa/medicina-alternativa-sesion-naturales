@@ -38,6 +38,11 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.TEXT,
             allowNull: true
         },
+        notas: {
+            type: Sequelize.TEXT,
+            allowNull: true,
+            defaultValue: ""
+        },
         activo: {
             type: Sequelize.BOOLEAN,
             defaultValue: true
